@@ -5,6 +5,8 @@
 Example usage:
 
 ```python
+from flatutils import PgDumpFile
+
 f = PgDumpFile('/opt/bigdump.sql')
 sorted_f = f.output_sorted('/opt/sorteddump.sql', 'column1', 'column2')
 for row in sorted_f.iterate_rows():
