@@ -89,7 +89,7 @@ class FlatFile:
         comparable = self.schema.create_comparable(*columns)
         self.copy_row_lines(output_fn)
         extsort.extsort(output_fn, comparable, temp_dir=temp_dir)
-        return FlatFile(output_fn)
+        return FlatFile(output_fn, self.schema)
 
 class PgDumpFile(FlatFile):
     def __init__(self, fn):
