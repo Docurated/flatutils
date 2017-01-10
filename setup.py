@@ -8,6 +8,6 @@ setup(
     description="Simple, lightweight utility to sort and iterate through large pg_dumps",
     author="Adam Duston",
     author_email="adam@docurated.com",
-    packages="flatutils",
+    packages=["flatutils"],
     platforms="Posix; MacOS X"
 )

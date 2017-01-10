@@ -1,7 +1,7 @@
 import re
 import os
 import json
-import extsort
+from . import extsort
 from datetime import datetime
 
 FIELD_INT = 1
@@ -155,5 +155,3 @@ class PgDumpFile(FlatFile):
                 if line.startswith("CREATE TABLE"):
                     in_create = True
         return fields
-
-    
