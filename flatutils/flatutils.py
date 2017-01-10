@@ -1,4 +1,5 @@
 import re
+import os
 import json
 import extsort
 from datetime import datetime
@@ -91,6 +92,36 @@ class FlatFile:
         extsort.extsort(output_fn, comparable, temp_dir=temp_dir)
         return FlatFile(output_fn, self.schema)
 
+    def select(self, *field_names):
+        fields = [self.field_map[f] for f in field_names]
+        for line in self.iterate_row_lines():
+            values = line.strip().split("\t")
+            yield tuple(values[f.position] for f in fields)
+
+    def select_to_file(self, file_name, *field_names):
+        fields = [self.schema.field_map[n] for n in field_names]
+        with open(file_name, 'r') as f:
+            for values in self.select(field_names):
+                f.write("\t".join(values))
+        return FlatFile(file_name, Schema(fields))
+
+    def partition_by_fields(self, field_names, output_dir, fn_template):
+        if isinstance(field_names, str):
+            field_names = [field_names]
+        fields = [self.schema.field_map[n] for n in field_names]
+        output_files = {}
+        try:
+            for line in self.iterate_row_lines():
+                values = line.strip().split("\t")
+                key = tuple(f.parse_value(values[f.position]) for f in fields)
+                if key not in output_files:
+                    output_files[key] = open(
+                        os.path.join(output_dir, fn_template.format(*key)), 'w')
+                output_files[key].write(line)
+        finally:
+            for f in output_files.values():
+                f.close()
+
 class PgDumpFile(FlatFile):
     def __init__(self, fn):
         self.fn = fn
@@ -106,10 +137,6 @@ class PgDumpFile(FlatFile):
                     yield line
                 elif line.startswith("COPY "):
                     in_copy = True
-
-    def iterate_rows(self, parse_jsonb=True):
-        for line in self.iterate_row_lines():
-            yield self.schema.row_for_line(line, parse_jsonb)
 
     def _to_fields(self):
         in_create = False

@@ -1,4 +1,5 @@
 import os
+import re
 import tempfile
 import unittest
 from extsort import extsort
@@ -66,3 +67,21 @@ class TestFlatUtils(unittest.TestCase):
                         self.fail()
             count += 1
         self.assertEqual(875, count)
+
+    def test_partition_by_one_field(self):
+        fn = os.path.join(DATA_DIR, 'groups.sql')
+        f = PgDumpFile(fn)
+        counts = {}
+        for row in f.iterate_rows():
+            org_id = row['organization_id']
+            counts[org_id] = counts.get(org_id, 0) + 1
+        with tempfile.TemporaryDirectory() as dir_name:
+            f.partition_by_fields("organization_id", dir_name, "out{0}.txt")
+            file_names = os.listdir(dir_name)
+            self.assertEqual(len(counts), len(file_names))
+            for fn in file_names:
+                org_id = int(re.search(r"\d+", fn).group(0))
+                count = 0
+                with open(os.path.join(dir_name, fn), 'r') as f:
+                    count = len(f.readlines())
+                self.assertEqual(counts[org_id], count)
