@@ -1,1 +1,1 @@
-from .flatutils import *
+from flatutils.flatutils import *
