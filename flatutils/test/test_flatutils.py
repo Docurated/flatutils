@@ -5,7 +5,7 @@ import unittest
 from extsort import extsort
 import datetime
 
-from flatutils import PgDumpFile, FlatFile
+from flatutils import PgDumpFile, FlatFile, Schema
 from . import DATA_DIR
 
 class TestFlatUtils(unittest.TestCase):
@@ -85,3 +85,14 @@ class TestFlatUtils(unittest.TestCase):
                 with open(os.path.join(dir_name, fn), 'r') as f:
                     count = len(f.readlines())
                 self.assertEqual(counts[org_id], count)
+
+    def test_serdeser(self):
+        fn = os.path.join(DATA_DIR, 'groups.sql')
+        f = PgDumpFile(fn)
+        schema_0 = f.schema
+        schema_1 = Schema.from_json(schema_0.to_json())
+        self.assertEqual(len(schema_0.fields), len(schema_1.fields))
+        for field_0 in schema_0.fields:
+            field_1 = schema_1.field_map[field_0.name]
+            self.assertEqual(field_0.field_type, field_1.field_type)
+            self.assertEqual(field_0.position, field_1.position)

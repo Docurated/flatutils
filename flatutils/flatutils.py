@@ -1,7 +1,7 @@
 import re
 import os
 import json
-from . import extsort
+from extsort import extsort
 from datetime import datetime
 
 FIELD_INT = 1
@@ -67,6 +67,18 @@ class Schema:
             return tuple(f.parse_value(values[f.position]) for f in fields)
         return comparable
 
+    def to_json(self):
+        return json.dumps([[f.name, f.field_type, f.position] for f in self.fields])
+
+    @staticmethod
+    def from_json_file(fn):
+        with open(fn, 'r') as f:
+            return Schema.from_json(f.read())
+
+    @staticmethod
+    def from_json(json_str):
+        return Schema([Field(f[0], f[1], f[2]) for f in json.loads(json_str)])
+
 class FlatFile:
     def __init__(self, fn, schema):
         self.fn = fn
@@ -89,7 +101,7 @@ class FlatFile:
     def output_sorted(self, output_fn, *columns, temp_dir=None):
         comparable = self.schema.create_comparable(*columns)
         self.copy_row_lines(output_fn)
-        extsort.extsort(output_fn, comparable, temp_dir=temp_dir)
+        extsort(output_fn, comparable, temp_dir=temp_dir)
         return FlatFile(output_fn, self.schema)
 
     def select(self, *field_names):
