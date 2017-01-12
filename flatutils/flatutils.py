@@ -60,7 +60,7 @@ class Schema:
 
     def row_for_line(self, line, parse_jsonb=True):
         obj = {}
-        values = line.strip().split("\t")
+        values = line.rstrip("\n").split("\t")
         for i, field in enumerate(self.fields):
             value = field.parse_value(values[i], parse_jsonb)
             if value is not None:
@@ -70,7 +70,7 @@ class Schema:
     def create_comparable(self, *field_names):
         fields = [self.field_map[f] for f in field_names]
         def comparable(line):
-            values = line.strip().split("\t")
+            values = line.rstrip("\n").split("\t")
             return tuple(f.parse_value(values[f.position]) for f in fields)
         return comparable
 
@@ -115,7 +115,7 @@ class FlatFile:
     def select(self, *field_names):
         fields = [self.field_map[f] for f in field_names]
         for line in self.iterate_row_lines():
-            values = line.strip().split("\t")
+            values = line.rstrip("\n").split("\t")
             yield tuple(values[f.position] for f in fields)
 
     def select_to_file(self, file_name, *field_names):
@@ -132,7 +132,7 @@ class FlatFile:
         output_files = {}
         try:
             for line in self.iterate_row_lines():
-                values = line.strip().split("\t")
+                values = line.rstrip("\n").split("\t")
                 key = tuple(f.parse_value(values[f.position]) for f in fields)
                 if key not in output_files:
                     output_files[key] = open(
