@@ -10,7 +10,6 @@ FIELD_STRING = 4
 FIELD_TIMESTAMP = 5
 FIELD_BOOLEAN = 6
 
-SQL_TIME_FORMAT_MS = "%Y-%m-%d %H:%M:%S.%f"
 SQL_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 def _field_type_from_sql(sql_type):
@@ -44,7 +43,8 @@ class Field:
         elif parse_jsonb and self.field_type == FIELD_JSON:
             return json.loads(value)
         elif self.field_type == FIELD_TIMESTAMP:
-            return datetime.strptime(value, SQL_TIME_FORMAT_MS)
+            value, _ = value.split(".")
+            return datetime.strptime(value, SQL_TIME_FORMAT)
         elif self.field_type == FIELD_BOOLEAN:
             return value == 't'
         else:

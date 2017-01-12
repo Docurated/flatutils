@@ -21,14 +21,14 @@ class TestFlatUtils(unittest.TestCase):
             ['created_at', 'id', 'name', 'organization_id', 'source_id', 'updated_at'],
             sorted(record.keys()))
         self.assertEqual(
-            datetime.datetime(2014, 8, 26, 14, 42, 13, 839069),
+            datetime.datetime(2014, 8, 26, 14, 42, 13),
             record['created_at'])
         self.assertEqual(2232, record['id'])
         self.assertEqual('group72', record['name'])
         self.assertEqual(337, record['organization_id'])
         self.assertEqual('group source 72', record['source_id'])
         self.assertEqual(
-            datetime.datetime(2014, 8, 26, 14, 42, 13, 839069),
+            datetime.datetime(2014, 8, 26, 14, 42, 13),
             record['updated_at'])
 
     def test_sort_pg_dump_simple(self):
