@@ -44,7 +44,10 @@ class Field:
         elif parse_jsonb and self.field_type == FIELD_JSON:
             return json.loads(value)
         elif self.field_type == FIELD_TIMESTAMP:
-            return datetime.strptime(value, SQL_TIME_FORMAT_MS)
+            if "." in value:
+                return datetime.strptime(value, SQL_TIME_FORMAT_MS)
+            else:
+                return datetime.strptime(value, SQL_TIME_FORMAT)
         elif self.field_type == FIELD_BOOLEAN:
             return value == 't'
         else:
