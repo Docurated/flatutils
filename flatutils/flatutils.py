@@ -29,10 +29,11 @@ def _field_type_from_sql(sql_type):
         return FIELD_STRING
 
 class Field:
-    def __init__(self, name, field_type, position):
+    def __init__(self, name, field_type, position, nullable=True):
         self.name = name
         self.field_type = field_type
         self.position = position
+        self.nullable = nullable
 
     def parse_value(self, value, parse_jsonb=True):
         if value == "\\N":
@@ -171,7 +172,8 @@ class PgDumpFile(FlatFile):
                         pieces = re.split(r'\s+', line.strip())
                         fields.append(Field(
                             pieces[0], _field_type_from_sql(pieces[1]),
-                            len(fields)))
+                            len(fields),
+                            'not null' not in line.lower()))
                 if line.startswith("CREATE TABLE"):
                     in_create = True
         return fields

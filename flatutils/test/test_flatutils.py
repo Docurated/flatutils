@@ -96,3 +96,11 @@ class TestFlatUtils(unittest.TestCase):
             field_1 = schema_1.field_map[field_0.name]
             self.assertEqual(field_0.field_type, field_1.field_type)
             self.assertEqual(field_0.position, field_1.position)
+
+    def test_schema(self):
+        fn = os.path.join(DATA_DIR, 'groups.sql')
+        f = PgDumpFile(fn)
+        schema = f.schema
+        self.assertEqual(True, schema.field_map['name'].nullable)
+        self.assertEqual(False, schema.field_map['created_at'].nullable)
+        self.assertEqual(True, schema.field_map['organization_id'].nullable)
