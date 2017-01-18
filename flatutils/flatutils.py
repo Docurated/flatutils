@@ -170,7 +170,7 @@ class PgDumpFile(FlatFile):
                     if line.startswith(");"):
                         return fields
                     else:
-                        line = line.replace(",", "")
+                        line = line.replace(",", "").replace('"', '')
                         pieces = re.split(r'\s+', line.strip())
                         fields.append(Field(
                             pieces[0], _field_type_from_sql(pieces[1]),
