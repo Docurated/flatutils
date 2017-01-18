@@ -78,7 +78,7 @@ class Schema:
         return comparable
 
     def to_json(self):
-        return json.dumps([[f.name, f.field_type, f.position] for f in self.fields])
+        return json.dumps([[f.name, f.field_type, f.position, f.nullable] for f in self.fields])
 
     @staticmethod
     def from_json_file(fn):
@@ -87,7 +87,7 @@ class Schema:
 
     @staticmethod
     def from_json(json_str):
-        return Schema([Field(f[0], f[1], f[2]) for f in json.loads(json_str)])
+        return Schema([Field(f[0], f[1], f[2], f[3]) for f in json.loads(json_str)])
 
 class FlatFile:
     def __init__(self, fn, schema):

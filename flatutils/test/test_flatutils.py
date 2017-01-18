@@ -5,7 +5,7 @@ import unittest
 from extsort import extsort
 import datetime
 
-from flatutils import PgDumpFile, FlatFile, Schema
+from flatutils import PgDumpFile, FlatFile, Schema, Field, FIELD_INT, FIELD_STRING
 from . import DATA_DIR
 
 class TestFlatUtils(unittest.TestCase):
@@ -104,3 +104,8 @@ class TestFlatUtils(unittest.TestCase):
         self.assertEqual(True, schema.field_map['name'].nullable)
         self.assertEqual(False, schema.field_map['created_at'].nullable)
         self.assertEqual(True, schema.field_map['organization_id'].nullable)
+
+    def test_schema_null_ser(self):
+        s = Schema([Field("test", FIELD_INT, 0, False)])
+        s = Schema.from_json(s.to_json())
+        self.assertEqual(s.fields[0].nullable, False)
