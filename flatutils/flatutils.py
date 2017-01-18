@@ -4,19 +4,21 @@ import json
 from datetime import datetime
 
 FIELD_INT = 1
-FIELD_FLOAT = 2
-FIELD_JSON = 3
-FIELD_STRING = 4
-FIELD_TIMESTAMP = 5
-FIELD_BOOLEAN = 6
+FIELD_LONG = 2
+FIELD_FLOAT = 3
+FIELD_JSON = 4
+FIELD_STRING = 5
+FIELD_TIMESTAMP = 6
+FIELD_BOOLEAN = 7
 
 SQL_TIME_FORMAT_MS = "%Y-%m-%d %H:%M:%S.%f"
 SQL_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 def _field_type_from_sql(sql_type):
-    if sql_type in ['smallint', 'integer', 'bigint',
-                    'smallserial', 'serial', 'bigserial']:
+    if sql_type in ['smallint', 'integer', 'smallserial', 'serial']:
         return FIELD_INT
+    elif sql_type in ['bigint', 'bigserial']:
+        return FIELD_LONG
     elif sql_type in ['decimal', 'numeric', 'real', 'double']:
         return FIELD_FLOAT
     elif sql_type == 'json':
