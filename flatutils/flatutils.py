@@ -30,6 +30,22 @@ def _field_type_from_sql(sql_type):
     else:
         return FIELD_STRING
 
+def _sql_type_from_field(f):
+    if f == FIELD_INT:
+        return 'integer'
+    elif f == FIELD_LONG:
+        return 'bigint'
+    elif f == FIELD_FLOAT:
+        return 'double'
+    elif f == FIELD_JSON:
+        return 'json'
+    elif f == FIELD_TIMESTAMP:
+        return 'timestamp without time zone'
+    elif f == FIELD_BOOLEAN:
+        return 'boolean'
+    else:
+        return 'text'
+
 class Field:
     def __init__(self, name, field_type, position, nullable=True):
         self.name = name
@@ -79,6 +95,16 @@ class Schema:
 
     def to_json(self):
         return json.dumps([[f.name, f.field_type, f.position, f.nullable] for f in self.fields])
+
+    def to_pg_cols(self):
+        cols = []
+        for f in self.fields:
+            c_type = _sql_type_from_field(f.field_type)
+            c = "%s %s" % (f.name, c_type)
+            if not f.nullable:
+                c += ' NOT NULL'
+            cols.append(c)
+        return cols
 
     @staticmethod
     def from_json_file(fn):
