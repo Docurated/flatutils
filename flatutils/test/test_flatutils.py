@@ -109,3 +109,13 @@ class TestFlatUtils(unittest.TestCase):
         s = Schema([Field("test", FIELD_INT, 0, False)])
         s = Schema.from_json(s.to_json())
         self.assertEqual(s.fields[0].nullable, False)
+
+    def test_pg_cols(self):
+        fn = os.path.join(DATA_DIR, 'groups.sql')
+        f = PgDumpFile(fn)
+        pg_cols = f.schema.to_pg_cols()
+        self.assertEqual('id integer NOT NULL', pg_cols[0])
+        self.assertEqual('name text', pg_cols[1])
+        self.assertEqual('created_at timestamp without time zone NOT NULL', pg_cols[2])
+
+
