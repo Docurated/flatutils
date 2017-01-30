@@ -57,7 +57,7 @@ class Field:
     def parse_value(self, value, parse_jsonb=True):
         if value == "\\N":
             return None
-        elif self.field_type == FIELD_INT:
+        elif self.field_type == FIELD_INT or self.field_type == FIELD_LONG:
             return int(value)
         elif self.field_type == FIELD_FLOAT:
             return float(value)
