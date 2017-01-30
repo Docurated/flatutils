@@ -1,6 +1,7 @@
 import re
 import os
 import json
+import codecs
 from datetime import datetime
 
 FIELD_INT = 1
@@ -70,7 +71,8 @@ class Field:
         elif self.field_type == FIELD_BOOLEAN:
             return value == 't'
         else:
-            return value
+            return codecs.escape_decode(
+                value.encode('utf-8'))[0].decode('utf-8')
 
 class Schema:
     def __init__(self, fields):

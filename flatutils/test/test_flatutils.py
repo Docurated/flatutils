@@ -31,6 +31,16 @@ class TestFlatUtils(unittest.TestCase):
             datetime.datetime(2014, 8, 26, 14, 42, 13, 839069),
             record['updated_at'])
 
+    def test_parse_escapes(self):
+        fn = os.path.join(DATA_DIR, 'groups.sql')
+        f = PgDumpFile(fn)
+        record = None
+        for i, row in enumerate(f.iterate_rows()):
+            if i == 2:
+                record = row
+                break
+        self.assertEqual("group so\nur\tce 70", record['source_id'])
+
     def test_sort_pg_dump_simple(self):
         fn = os.path.join(DATA_DIR, 'groups.sql')
         f = PgDumpFile(fn)

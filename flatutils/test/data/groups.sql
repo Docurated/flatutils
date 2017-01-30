@@ -68,7 +68,7 @@ ALTER TABLE ONLY groups ALTER COLUMN id SET DEFAULT nextval('groups_id_seq'::reg
 COPY groups (id, name, created_at, updated_at, organization_id, source, source_id, sync_attributes) FROM stdin;
 1761	group68	2014-08-14 01:33:07.573761	2014-08-14 01:33:07.643836	349	GoogleDrive	group source 68	\N
 501	group69	2014-06-30 01:48:50.371653	2014-08-15 18:37:43.233584	337	\N	group source 69	\N
-2229	group70	2014-08-16 07:12:43.4952	2014-08-16 07:12:43.4952	395	GoogleDrive	group source 70	\N
+2229	group70	2014-08-16 07:12:43.4952	2014-08-16 07:12:43.4952	395	GoogleDrive	group so\nur\tce 70	\N
 2230	group71	2014-08-26 14:42:12.327295	2014-08-26 14:42:12.327295	337	\N	group source 71	\N
 2232	group72	2014-08-26 14:42:13.839069	2014-08-26 14:42:13.839069	337	\N	group source 72	\N
 3426	group73	2015-01-26 15:56:08.805237	2015-01-26 15:56:08.805237	442	GoogleDrive	group source 73	\N
