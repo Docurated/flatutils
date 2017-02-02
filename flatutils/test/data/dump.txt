@@ -1,0 +1,5 @@
+1	abc\\thello\\r\\nw\\123h\\x3Fat	{"hey": "oh\\t\\nyeah"}
+2	abc\\\\th\\ello\\r\\nw\\123h\\x3Fat	{"hey": "oh\\t\\nyeah"}
+3	abc\thello\nwSh?at	{"hey": "oh\\t\\nyeah"}
+22837	if you like hybrids, you’ll \nlove.docx	{}
+6	\N	{}

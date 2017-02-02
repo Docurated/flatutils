@@ -1,4 +1,5 @@
 import re
+import csv
 import os
 import json
 import codecs
@@ -207,3 +208,30 @@ class PgDumpFile(FlatFile):
                 if line.startswith("CREATE TABLE"):
                     in_create = True
         return fields
+
+def convert_to_csv(txt_fn, out_fn):
+    with open(txt_fn, 'r') as inf, open(out_fn, 'w') as outf:
+        out_csv = csv.writer(outf)
+        for line in inf:
+            row = line.rstrip().split("\t")
+            new_row = []
+            for field in row:
+                if field == "\\N":
+                    new_row.append("")
+                else:
+                    new_row.append(codecs.escape_decode(
+                        field.encode("utf-8"))[0].decode("utf-8"))
+            out_csv.writerow(new_row)
+
+def convert_to_tab(csv_fn, out_fn):
+    with open(csv_fn, 'r') as inf, open(out_fn, 'w') as outf:
+        in_csv = csv.reader(inf)
+        for row in in_csv:
+            new_row = []
+            for field in row:
+                if field == "":
+                    new_row.append("\\N")
+                else:
+                    new_row.append(field.replace("\\", "\\\\").replace("\n", "\\n").replace("\t", "\\t")) # ended up cheating
+            outf.write("\t".join(new_row))
+            outf.write("\n")
