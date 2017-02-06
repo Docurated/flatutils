@@ -38,7 +38,7 @@ def _sql_type_from_field(f):
     elif f == FIELD_LONG:
         return 'bigint'
     elif f == FIELD_FLOAT:
-        return 'double'
+        return 'decimal'
     elif f == FIELD_JSON:
         return 'json'
     elif f == FIELD_TIMESTAMP:
