@@ -7,7 +7,7 @@ from extsort import extsort
 import datetime
 
 from flatutils import PgDumpFile, FlatFile, Schema, Field, FIELD_INT, \
-    FIELD_STRING, FIELD_LONG, FIELD_JSON, FIELD_TIMESTAMP
+    FIELD_STRING, FIELD_LONG, FIELD_JSON, FIELD_TIMESTAMP, FIELD_BOOLEAN
 import flatutils
 from . import DATA_DIR
 
@@ -162,8 +162,8 @@ class TestFlatUtils(unittest.TestCase):
 
     def test_to_dataframe(self):
         data = [
-            ["5", "abc", '{"hello": "computer"}', "2016-06-06 23:12:36"],
-            ["\\N", "def", '{"hello": "computer"}', "\\N"]
+            ["5", "abc", '{"hello": "computer"}', "2016-06-06 23:12:36", 't'],
+            ["\\N", "def", '{"hello": "computer"}', "\\N", '\\N',]
         ]
         wf, wfn = tempfile.mkstemp()
         os.close(wf)
@@ -175,7 +175,8 @@ class TestFlatUtils(unittest.TestCase):
             Field("id", FIELD_LONG, 0, True),
             Field("name", FIELD_STRING, 1, False),
             Field("data", FIELD_JSON, 2, False),
-            Field("time", FIELD_TIMESTAMP, 3, True)])
+            Field("time", FIELD_TIMESTAMP, 3, True),
+            Field("is_closed", FIELD_BOOLEAN, 4, True)])
         ff = FlatFile(wfn, schema)
         df = ff.to_dataframe()
         self.assertEqual("id", df.columns[0])
@@ -184,3 +185,6 @@ class TestFlatUtils(unittest.TestCase):
         self.assertEqual("time", df.columns[3])
         self.assertEqual(5.0, df["id"].iloc[0])
         self.assertTrue(np.isnan(df["id"].iloc[1]))
+        self.assertEqual(1.0, df["is_closed"].iloc[0])
+        self.assertTrue(np.isnan(df["is_closed"].iloc[1]))
+

@@ -179,10 +179,18 @@ class FlatFile:
                 f.close()
 
     def to_dataframe(self):
+        def bool_converter(x):
+            if x == '\\N':
+                return np.nan
+            return 1.0 if x == 't' else 0.0
+        bools = dict((f.name, bool_converter) 
+                for f in self.schema.fields if f.field_type == FIELD_BOOLEAN)
+
         return pd.read_table(
             self.fn,
             header=None,
             names=[f.name for f in self.schema.fields],
+            converters=bools,
             dtype=dict((f.name, _pd_type_from_field_type(f.field_type))
                        for f in self.schema.fields),
             na_values=["\\N"])
