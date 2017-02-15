@@ -178,15 +178,6 @@ class FlatFile:
             for f in output_files.values():
                 f.close()
 
-    def num_header_lines(self):
-        count = 0
-        with open(self.fn, 'r') as f:
-            for line in f:
-                count += 1
-                if line.startswith("COPY "):
-                    break
-        return count
-
     def to_dataframe(self):
         def int_converter(x):
             return -1 if x == '\\N' else int(x)
@@ -205,7 +196,6 @@ class FlatFile:
         return pd.read_table(
             self.fn,
             header=None,
-            skiprows=self.num_header_lines(),
             names=[f.name for f in self.schema.fields],
             converters=converters,
             dtype=dict((f.name, _pd_type_from_field_type(f.field_type))
