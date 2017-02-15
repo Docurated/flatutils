@@ -2,6 +2,7 @@ import os
 import re
 import tempfile
 import unittest
+import numpy as np
 from extsort import extsort
 import datetime
 
@@ -177,4 +178,9 @@ class TestFlatUtils(unittest.TestCase):
             Field("time", FIELD_TIMESTAMP, 3, True)])
         ff = FlatFile(wfn, schema)
         df = ff.to_dataframe()
-        print(df.columns)
+        self.assertEqual("id", df.columns[0])
+        self.assertEqual("name", df.columns[1])
+        self.assertEqual("data", df.columns[2])
+        self.assertEqual("time", df.columns[3])
+        self.assertEqual(5.0, df["id"].iloc[0])
+        self.assertTrue(np.isnan(df["id"].iloc[1]))
