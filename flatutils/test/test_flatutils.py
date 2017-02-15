@@ -5,7 +5,8 @@ import unittest
 from extsort import extsort
 import datetime
 
-from flatutils import PgDumpFile, FlatFile, Schema, Field, FIELD_INT, FIELD_STRING
+from flatutils import PgDumpFile, FlatFile, Schema, Field, FIELD_INT, \
+    FIELD_STRING, FIELD_LONG, FIELD_JSON, FIELD_TIMESTAMP
 import flatutils
 from . import DATA_DIR
 
@@ -157,3 +158,23 @@ class TestFlatUtils(unittest.TestCase):
                              _file_text(outfn))
         finally:
             os.unlink(outfn)
+
+    def test_to_dataframe(self):
+        data = [
+            ["5", "abc", '{"hello": "computer"}', "2016-06-06 23:12:36"],
+            ["\\N", "def", '{"hello": "computer"}', "\\N"]
+        ]
+        wf, wfn = tempfile.mkstemp()
+        os.close(wf)
+        with open(wfn, "w") as f:
+            for line in data:
+                f.write("\t".join(line))
+                f.write("\n")
+        schema = Schema([
+            Field("id", FIELD_LONG, 0, True),
+            Field("name", FIELD_STRING, 1, False),
+            Field("data", FIELD_JSON, 2, False),
+            Field("time", FIELD_TIMESTAMP, 3, True)])
+        ff = FlatFile(wfn, schema)
+        df = ff.to_dataframe()
+        print(df.columns)

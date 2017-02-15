@@ -3,6 +3,8 @@ import csv
 import os
 import json
 import codecs
+import pandas as pd
+import numpy as np
 from datetime import datetime
 
 FIELD_INT = 1
@@ -17,41 +19,38 @@ FIELD_DECIMAL = 8
 SQL_TIME_FORMAT_MS = "%Y-%m-%d %H:%M:%S.%f"
 SQL_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
+def _make_sql_to_field_mappings(d):
+    m = {}
+    for k, v in d.items():
+        for t in v[0]:
+            m[t] = k
+    return m
+
+FIELD_MAPPINGS = {
+    FIELD_INT: (['integer', 'smallint', 'smallserial', 'serial'], np.int32),
+    FIELD_LONG: (['bigint', 'bigserial'], np.int64),
+    FIELD_DECIMAL: (['decimal', 'numeric'], np.float64),
+    FIELD_FLOAT: (['real', 'double'], np.float64),
+    FIELD_JSON: (['json', 'jsonb'], object),
+    FIELD_TIMESTAMP: (['timestamp'], object, 'timestamp without time zone'),
+    FIELD_BOOLEAN: (['boolean'], np.int8),
+    FIELD_STRING: (['text'], object)
+}
+
+SQL_TO_FIELD_MAPPINGS = _make_sql_to_field_mappings(FIELD_MAPPINGS)
+
+def _pd_type_from_field_type(f):
+    return FIELD_MAPPINGS.get(f, (None, object))[1]
+
 def _field_type_from_sql(sql_type):
-    if sql_type in ['smallint', 'integer', 'smallserial', 'serial']:
-        return FIELD_INT
-    elif sql_type in ['bigint', 'bigserial']:
-        return FIELD_LONG
-    elif sql_type in ['decimal', 'numeric']:
-        return FIELD_DECIMAL
-    elif sql_type in ['real', 'double']:
-        return FIELD_FLOAT
-    elif sql_type == 'json':
-        return FIELD_JSON
-    elif sql_type == 'timestamp':
-        return FIELD_TIMESTAMP
-    elif sql_type == 'boolean':
-        return FIELD_BOOLEAN
-    else:
-        return FIELD_STRING
+    return SQL_TO_FIELD_MAPPINGS.get(sql_type, FIELD_STRING)
 
 def _sql_type_from_field(f):
-    if f == FIELD_INT:
-        return 'integer'
-    elif f == FIELD_LONG:
-        return 'bigint'
-    elif f == FIELD_FLOAT:
-        return 'double precision'
-    elif f == FIELD_DECIMAL:
-        return 'decimal'
-    elif f == FIELD_JSON:
-        return 'json'
-    elif f == FIELD_TIMESTAMP:
-        return 'timestamp without time zone'
-    elif f == FIELD_BOOLEAN:
-        return 'boolean'
+    val = FIELD_MAPPINGS.get(f, (['text'], object))
+    if len(val) == 3:
+        return val[2]
     else:
-        return 'text'
+        return val[0][0]
 
 class Field:
     def __init__(self, name, field_type, position, nullable=True):
@@ -178,6 +177,14 @@ class FlatFile:
         finally:
             for f in output_files.values():
                 f.close()
+
+    def to_dataframe(self):
+        return pd.read_table(
+            self.fn,
+            header=None,
+            names=[f.name for f in self.schema.fields],
+            dtype=dict((f.name, _pd_type_from_field_type(f.field_type))
+                       for f in self.schema.fields))
 
 class PgDumpFile(FlatFile):
     def __init__(self, fn):
