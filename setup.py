@@ -4,10 +4,14 @@ from setuptools import setup
 
 setup(
     name="flatutils",
-    version="1.1.2",
+    version="1.1.3",
     description="Simple, lightweight utility to sort and iterate through large pg_dumps",
     author="Adam Duston",
     author_email="adam@docurated.com",
     packages=["flatutils"],
+    install_requires=[
+        "numpy",
+        "pandas"
+    ],
     platforms="Posix; MacOS X"
 )
