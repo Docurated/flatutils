@@ -12,6 +12,7 @@ FIELD_JSON = 4
 FIELD_STRING = 5
 FIELD_TIMESTAMP = 6
 FIELD_BOOLEAN = 7
+FIELD_DECIMAL = 8
 
 SQL_TIME_FORMAT_MS = "%Y-%m-%d %H:%M:%S.%f"
 SQL_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -21,7 +22,9 @@ def _field_type_from_sql(sql_type):
         return FIELD_INT
     elif sql_type in ['bigint', 'bigserial']:
         return FIELD_LONG
-    elif sql_type in ['decimal', 'numeric', 'real', 'double']:
+    elif sql_type in ['decimal', 'numeric']:
+        return FIELD_DECIMAL
+    elif sql_type in ['real', 'double']:
         return FIELD_FLOAT
     elif sql_type == 'json':
         return FIELD_JSON
@@ -38,6 +41,8 @@ def _sql_type_from_field(f):
     elif f == FIELD_LONG:
         return 'bigint'
     elif f == FIELD_FLOAT:
+        return 'double precision'
+    elif f == FIELD_DECIMAL:
         return 'decimal'
     elif f == FIELD_JSON:
         return 'json'
