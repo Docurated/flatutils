@@ -183,8 +183,8 @@ class TestFlatUtils(unittest.TestCase):
         self.assertEqual("name", df.columns[1])
         self.assertEqual("data", df.columns[2])
         self.assertEqual("time", df.columns[3])
-        self.assertEqual(5.0, df["id"].iloc[0])
-        self.assertTrue(np.isnan(df["id"].iloc[1]))
-        self.assertEqual(1.0, df["is_closed"].iloc[0])
+        self.assertEqual(5, df["id"].iloc[0])
+        self.assertEqual(-1, df["id"].iloc[1])
+        self.assertEqual(1, df["is_closed"].iloc[0])
         self.assertTrue(np.isnan(df["is_closed"].iloc[1]))
 

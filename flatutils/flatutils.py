@@ -27,13 +27,13 @@ def _make_sql_to_field_mappings(d):
     return m
 
 FIELD_MAPPINGS = {
-    FIELD_INT: (['integer', 'smallint', 'smallserial', 'serial'], np.float32),
-    FIELD_LONG: (['bigint', 'bigserial'], np.float64),
+    FIELD_INT: (['integer', 'smallint', 'smallserial', 'serial'], np.int32),
+    FIELD_LONG: (['bigint', 'bigserial'], np.int64),
     FIELD_DECIMAL: (['decimal', 'numeric'], np.float64),
     FIELD_FLOAT: (['real', 'double'], np.float64),
     FIELD_JSON: (['json', 'jsonb'], object),
     FIELD_TIMESTAMP: (['timestamp'], object, 'timestamp without time zone'),
-    FIELD_BOOLEAN: (['boolean'], np.float16),
+    FIELD_BOOLEAN: (['boolean'], np.int8),
     FIELD_STRING: (['text'], object)
 }
 
@@ -179,18 +179,25 @@ class FlatFile:
                 f.close()
 
     def to_dataframe(self):
+        def int_converter(x):
+            return -1 if x == '\\N' else int(x)
         def bool_converter(x):
             if x == '\\N':
                 return np.nan
-            return 1.0 if x == 't' else 0.0
-        bools = dict((f.name, bool_converter) 
-                for f in self.schema.fields if f.field_type == FIELD_BOOLEAN)
+            return 1 if x == 't' else 0
+
+        converters = {}
+        for f in self.schema.fields:
+            if f.field_type == FIELD_BOOLEAN:
+                converters[f.name] = bool_converter
+            elif f.field_type == FIELD_INT or f.field_type == FIELD_LONG:
+                converters[f.name] = int_converter
 
         return pd.read_table(
             self.fn,
             header=None,
             names=[f.name for f in self.schema.fields],
-            converters=bools,
+            converters=converters,
             dtype=dict((f.name, _pd_type_from_field_type(f.field_type))
                        for f in self.schema.fields),
             na_values=["\\N"])
