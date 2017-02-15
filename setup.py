@@ -4,9 +4,9 @@ from setuptools import setup
 
 setup(
     name="flatutils",
-    version="1.1.5",
+    version="1.1.6",
     description="Simple, lightweight utility to sort and iterate through large pg_dumps",
-    author="Adam Duston",
+    author="Adam Duston, Sam Paul",
     author_email="adam@docurated.com",
     packages=["flatutils"],
     install_requires=[

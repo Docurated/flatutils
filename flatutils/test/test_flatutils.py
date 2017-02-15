@@ -162,6 +162,9 @@ class TestFlatUtils(unittest.TestCase):
 
     def test_to_dataframe(self):
         data = [
+            ["jank line1"],
+            ["jank line2"],
+            ["COPY LINE"],
             ["5", "abc", '{"hello": "computer"}', "2016-06-06 23:12:36", 't'],
             ["\\N", "def", '{"hello": "computer"}', "\\N", '\\N',]
         ]
